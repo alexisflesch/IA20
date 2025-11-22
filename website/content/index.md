@@ -2,24 +2,39 @@
 title: "IA20 - Intelligence Artificielle"
 ---
 
-Bienvenue sur le site du cours d'Intelligence Artificielle (L2). Ce portail regroupe l'ensemble des ressources pédagogiques.
+<div class="hero">
+  <h1>IA20 - Intelligence Artificielle</h1>
+  <p class="subtitle">Bienvenue sur le site du cours d'Intelligence Artificielle (L2). Ce portail regroupe l'ensemble des ressources pédagogiques.</p>
+</div>
 
 <div class="grid-cards">
   <a href="cours/CM1/" class="card">
-    <h3>Le Cours</h3>
-    <p>Accéder aux chapitres du cours magistral (CM1 à CM7).</p>
+    <div class="card-icon">📚</div>
+    <div class="card-content">
+      <h3>Le Cours</h3>
+      <p>Accéder aux chapitres du cours magistral (CM1 à CM7).</p>
+    </div>
   </a>
   <a href="td/TD1/" class="card">
-    <h3>Travaux Dirigés</h3>
-    <p>Exercices et corrections des TD.</p>
+    <div class="card-icon">📝</div>
+    <div class="card-content">
+      <h3>Travaux Dirigés</h3>
+      <p>Exercices et corrections des TD.</p>
+    </div>
   </a>
   <a href="tp/TP1/" class="card">
-    <h3>Travaux Pratiques</h3>
-    <p>Sujets de TP et notebooks Python.</p>
+    <div class="card-icon">💻</div>
+    <div class="card-content">
+      <h3>Travaux Pratiques</h3>
+      <p>Sujets de TP et notebooks Python.</p>
+    </div>
   </a>
   <a href="slides/" class="card external">
-    <h3>Slides</h3>
-    <p>Supports de présentation interactifs (Reveal.js).</p>
+    <div class="card-icon">📽️</div>
+    <div class="card-content">
+      <h3>Slides</h3>
+      <p>Supports de présentation interactifs (Reveal.js).</p>
+    </div>
   </a>
 </div>
 
@@ -52,32 +67,69 @@ Bienvenue sur le site du cours d'Intelligence Artificielle (L2). Ce portail regr
 - [TP 6 — Mini-Projet](tp/TP6/)
 
 <style>
+.hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(120deg, var(--secondary), var(--tertiary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--gray);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .grid-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
   margin: 2rem 0;
 }
 .card {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 1.5rem;
   border: 1px solid var(--lightgray);
-  border-radius: 8px;
+  border-radius: 12px;
   text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
   background: var(--light);
+  gap: 1.5rem;
 }
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
   border-color: var(--secondary);
 }
+.card-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  padding: 1rem;
+  background: var(--lightgray);
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+.card:hover .card-icon {
+  background: var(--highlight);
+}
+.card-content {
+  flex: 1;
+}
 .card h3 {
-  margin-top: 0;
-  color: var(--secondary);
+  margin: 0 0 0.5rem 0;
+  color: var(--dark);
+  font-size: 1.2rem;
 }
 .card p {
-  margin-bottom: 0;
+  margin: 0;
   color: var(--gray);
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 </style>
