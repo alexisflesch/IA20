@@ -2,118 +2,111 @@
 title: "IA20 - Intelligence Artificielle"
 ---
 
-<div class="hero">
-  <h1>IA20 - Intelligence Artificielle</h1>
-  <p class="subtitle">Bienvenue sur le site du cours d'Intelligence Artificielle (L2). Ce portail regroupe l'ensemble des ressources pédagogiques.</p>
+<div class="landing-container">
+  <div class="hero">
+    <h1>IA20 - Intelligence Artificielle</h1>
+    <p class="subtitle">Bienvenue sur le site du cours d'Intelligence Artificielle (L2). Ce portail regroupe l'ensemble des ressources pédagogiques.</p>
+  </div>
+
+  <div class="grid-cards">
+    <a href="cours/" class="card">
+      <div class="card-icon">📚</div>
+      <div class="card-content">
+        <h3>Le Cours</h3>
+        <p>Accéder aux chapitres du cours magistral (CM1 à CM7).</p>
+      </div>
+    </a>
+    <a href="td/" class="card">
+      <div class="card-icon">📝</div>
+      <div class="card-content">
+        <h3>Travaux Dirigés</h3>
+        <p>Exercices et corrections des TD.</p>
+      </div>
+    </a>
+    <a href="tp/" class="card">
+      <div class="card-icon">💻</div>
+      <div class="card-content">
+        <h3>Travaux Pratiques</h3>
+        <p>Sujets de TP et notebooks Python.</p>
+      </div>
+    </a>
+    <a href="slides/" class="card external">
+      <div class="card-icon">📽️</div>
+      <div class="card-content">
+        <h3>Slides</h3>
+        <p>Supports de présentation interactifs (Reveal.js).</p>
+      </div>
+    </a>
+  </div>
 </div>
-
-<div class="grid-cards">
-  <a href="cours/CM1/" class="card">
-    <div class="card-icon">📚</div>
-    <div class="card-content">
-      <h3>Le Cours</h3>
-      <p>Accéder aux chapitres du cours magistral (CM1 à CM7).</p>
-    </div>
-  </a>
-  <a href="td/TD1/" class="card">
-    <div class="card-icon">📝</div>
-    <div class="card-content">
-      <h3>Travaux Dirigés</h3>
-      <p>Exercices et corrections des TD.</p>
-    </div>
-  </a>
-  <a href="tp/TP1/" class="card">
-    <div class="card-icon">💻</div>
-    <div class="card-content">
-      <h3>Travaux Pratiques</h3>
-      <p>Sujets de TP et notebooks Python.</p>
-    </div>
-  </a>
-  <a href="slides/" class="card external">
-    <div class="card-icon">📽️</div>
-    <div class="card-content">
-      <h3>Slides</h3>
-      <p>Supports de présentation interactifs (Reveal.js).</p>
-    </div>
-  </a>
-</div>
-
-## 📚 Programme Détaillé
-
-### Cours Magistraux
-- [Chapitre 1 — Introduction et Représentation des données](cours/CM1/)
-- [Chapitre 2 — Apprentissage Supervisé : Régression et KNN](cours/CM2/)
-- [Chapitre 3 — Évaluation et Validation](cours/CM3/)
-- [Chapitre 4 — Apprentissage Non Supervisé](cours/CM4/)
-- [Chapitre 5 — Réseaux de Neurones (Perceptron & MLP)](cours/CM5/)
-- [Chapitre 6 — Deep Learning et IA Générative](cours/CM6/)
-- [Chapitre 7 — Éthique, Limites et Société](cours/CM7/)
-
-### Travaux Dirigés
-- [TD 1 — Vecteurs, Distances et Normalisation](td/TD1/)
-- [TD 2 — Régression Linéaire et KNN](td/TD2/)
-- [TD 3 — Évaluation de Modèles](td/TD3/)
-- [TD 4 — Clustering K-Means](td/TD4/)
-- [TD 5 — Réseaux de Neurones (Calculs Manuels)](td/TD5/)
-- [TD 6 — Convolution et Deep Learning](td/TD6/)
-- [TD 7 — Analyse Critique et Éthique](td/TD7/)
-
-### Travaux Pratiques
-- [TP 1 — Introduction à Python pour la Data Science](tp/TP1/)
-- [TP 2 — Régression Linéaire](tp/TP2/)
-- [TP 3 — Classification KNN](tp/TP3/)
-- [TP 4 — Clustering K-Means](tp/TP4/)
-- [TP 5 — Réseaux de Neurones (MLP)](tp/TP5/)
-- [TP 6 — Mini-Projet](tp/TP6/)
 
 <style>
+/* Hide default elements if they leak through */
+.page-header, .popover-hint {
+  display: none !important;
+}
+
+.landing-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 60vh;
+}
+
 .hero {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 4rem;
 }
 .hero h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
   background: linear-gradient(120deg, var(--secondary), var(--tertiary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-weight: 800;
 }
 .subtitle {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: var(--gray);
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
+  line-height: 1.6;
 }
 
 .grid-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
+  gap: 2rem;
+  margin: 0 auto;
+  width: 100%;
 }
 .card {
   display: flex;
   align-items: center;
-  padding: 1.5rem;
+  padding: 2rem;
   border: 1px solid var(--lightgray);
-  border-radius: 12px;
+  border-radius: 16px;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   background: var(--light);
   gap: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
 }
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
   border-color: var(--secondary);
 }
 .card-icon {
-  font-size: 2.5rem;
+  font-size: 3rem;
   line-height: 1;
-  padding: 1rem;
+  padding: 1.2rem;
   background: var(--lightgray);
-  border-radius: 12px;
-  transition: background 0.2s;
+  border-radius: 16px;
+  transition: background 0.3s;
 }
 .card:hover .card-icon {
   background: var(--highlight);
@@ -124,12 +117,13 @@ title: "IA20 - Intelligence Artificielle"
 .card h3 {
   margin: 0 0 0.5rem 0;
   color: var(--dark);
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  font-weight: 700;
 }
 .card p {
   margin: 0;
   color: var(--gray);
-  font-size: 0.95rem;
-  line-height: 1.4;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 </style>
