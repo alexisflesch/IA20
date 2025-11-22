@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Means Clustering Demo</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: transparent;
+            /* Allows embedding background to show through if needed */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Dark mode support if the parent iframe allows it, but let's keep it simple with light canvas */
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #eee;
+            }
+        }
+
+        body.dark {
+            color: #eee;
+        }
+
+        body.dark canvas {
+            background: #1e1e1e;
+            border-color: #444;
+        }
+
+        body.dark .controls {
+            background: rgba(30, 30, 30, 0.8);
+            color: #eee;
+        }
+
+        body.dark .stat-box {
+            color: #aaa;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            /* Canvas always white for color contrast */
+            cursor: crosshair;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background-color: #2563eb;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background-color: #93c5fd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background-color: #4b5563;
+        }
+
+        button.secondary:hover {
+            background-color: #374151;
+        }
+
+        .stat-box {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .stat-box {
+                color: #aaa;
+            }
+        }
+
+        label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="range"] {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <label for="k-slider">K = <span id="k-val">3</span></label>
+        <input type="range" id="k-slider" min="2" max="8" value="3">
+        <div style="width: 1px; height: 20px; background: #ccc; margin: 0 5px;"></div>
+        <button id="btn-reset" class="secondary">Nouveaux Points</button>
+        <button id="btn-init">Initialiser</button>
+        <button id="btn-step">Étape +1</button>
+        <button id="btn-run">Auto</button>
+    </div>
+    <canvas id="canvas" width="800" height="500"></canvas>
+    <div class="stat-box" id="status">Générez des points ou cliquez sur le canvas pour en ajouter.</div>
+
+    <script src="kmeans.js"></script>
+    <script>
+        function syncTheme() {
+            let isDark = false;
+            try {
+                const parentHtml = window.parent.document.documentElement;
+                const savedTheme = parentHtml.getAttribute('saved-theme');
+                if (savedTheme === 'dark') {
+                    isDark = true;
+                } else if (savedTheme === 'light') {
+                    isDark = false;
+                } else {
+                    isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+            } catch (e) {
+                isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            if (isDark) document.body.classList.add('dark');
+            else document.body.classList.remove('dark');
+        }
+
+        syncTheme();
+
+        try {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === "attributes" && mutation.attributeName === "saved-theme") {
+                        syncTheme();
+                    }
+                });
+            });
+            observer.observe(window.parent.document.documentElement, { attributes: true });
+        } catch (e) { }
+    </script>
+</body>
+
+</html>

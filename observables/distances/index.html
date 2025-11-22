@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Distance Heatmaps</title>
+<style>
+    html {
+        background: transparent;
+    }
+
+    body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 10px;
+        background: transparent;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+        transition: color 0.3s;
+    }
+
+    body.dark {
+        color: #ebebec;
+    }
+
+    h2 {
+        margin-top: 0;
+        color: inherit;
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .controls {
+        margin-bottom: 10px;
+        display: flex;
+        gap: 10px;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 8px;
+        border-radius: 8px;
+        transition: background 0.3s;
+    }
+
+    body.dark .controls {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    button {
+        padding: 8px 16px;
+        border: 1px solid #ccc;
+        background: white;
+        color: #333;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+    body.dark button {
+        background: #2b2b2b;
+        color: #ebebec;
+        border-color: #4e4e4e;
+    }
+
+    button:hover {
+        background: #e0e0e0;
+    }
+
+    body.dark button:hover {
+        background: #393639;
+    }
+
+    button.active {
+        background: #2196f3;
+        color: white;
+        border-color: #1976d2;
+    }
+
+    body.dark button.active {
+        background: #7b97aa;
+        color: #161618;
+        border-color: #7b97aa;
+    }
+
+    .canvas-container {
+        position: relative;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    canvas {
+        display: block;
+        cursor: crosshair;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+
+    .overlay circle {
+        pointer-events: all;
+    }
+
+    .legend {
+        margin-top: 8px;
+        font-size: 0.85em;
+        opacity: 0.8;
+        color: inherit;
+    }
+</style>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<body>
+
+    <h2>Visualisation des Distances (Heatmap)</h2>
+
+    <div class="controls">
+        <button onclick="setMetric('l2')" id="btn-l2" class="active">Euclidienne (L2)</button>
+        <button onclick="setMetric('l1')" id="btn-l1">Manhattan (L1)</button>
+        <button onclick="setMetric('linf')" id="btn-linf">Chebyshev (L∞)</button>
+        <button onclick="setMetric('cosine')" id="btn-cosine">Cosinus</button>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="heatmap" width="500" height="500"></canvas>
+        <svg id="overlay" class="overlay" width="500" height="500"></svg>
+    </div>
+
+    <div class="legend">
+        Déplacez le point blanc pour changer le centre de référence.<br>
+        Couleur : Bleu (Proche) &rarr; Rouge (Loin)
+    </div>
+
+    <script>
+        // Theme sync with parent Quartz site
+        function syncTheme() {
+            let isDark = false;
+            try {
+                const parentHtml = window.parent.document.documentElement;
+                const savedTheme = parentHtml.getAttribute('saved-theme');
+                if (savedTheme === 'dark') {
+                    isDark = true;
+                } else if (savedTheme === 'light') {
+                    isDark = false;
+                } else {
+                    // Fallback if parent not ready or cross-origin
+                    isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+            } catch (e) {
+                // Fallback for cross-origin
+                isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            if (isDark) document.body.classList.add('dark');
+            else document.body.classList.remove('dark');
+        }
+
+        // Initial sync
+        syncTheme();
+
+        // Listen for changes in parent
+        try {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === "attributes" && mutation.attributeName === "saved-theme") {
+                        syncTheme();
+                    }
+                });
+            });
+            observer.observe(window.parent.document.documentElement, { attributes: true });
+        } catch (e) { }
+
+        const canvas = document.getElementById('heatmap');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // State
+        let currentMetric = 'l2';
+        let center = { x: width / 2, y: height / 2 };
+
+        // Image Data buffer
+        const imgData = ctx.createImageData(width, height);
+        const data = imgData.data;
+
+        // Color Scale (Turbo is great for heatmaps)
+        const colorScale = d3.scaleSequential(d3.interpolateTurbo).domain([0, 1]);
+
+        // Precompute color map for performance
+        const colorMap = new Uint8ClampedArray(1001 * 4);
+        for (let i = 0; i <= 1000; i++) {
+            const c = d3.color(colorScale(i / 1000));
+            colorMap[i * 4] = c.r;
+            colorMap[i * 4 + 1] = c.g;
+            colorMap[i * 4 + 2] = c.b;
+            colorMap[i * 4 + 3] = 255;
+        }
+
+        function setMetric(m) {
+            currentMetric = m;
+            document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + m).classList.add('active');
+
+            // Reset center for Cosine to avoid (0,0) issue
+            if (m === 'cosine') {
+                center = { x: width * 0.75, y: height * 0.25 };
+            } else {
+                // Keep current center or reset? Let's keep it unless it was at origin
+            }
+
+            draw();
+        }
+
+        function getDistance(x, y, cx, cy, metric) {
+            const dx = x - cx;
+            const dy = y - cy;
+
+            switch (metric) {
+                case 'l2':
+                    return Math.sqrt(dx * dx + dy * dy);
+                case 'l1':
+                    return Math.abs(dx) + Math.abs(dy);
+                case 'linf':
+                    return Math.max(Math.abs(dx), Math.abs(dy));
+                case 'cosine':
+                    // Vector 1: (x, y) from origin (0,0)
+                    // Vector 2: (cx, cy) from origin (0,0)
+                    // We treat top-left as origin for simplicity, or center?
+                    // Let's use center of canvas as origin (0,0) for Cosine to make sense
+                    const ox = width / 2;
+                    const oy = height / 2;
+
+                    const v1x = x - ox;
+                    const v1y = y - oy;
+                    const v2x = cx - ox;
+                    const v2y = cy - oy;
+
+                    const dot = v1x * v2x + v1y * v2y;
+                    const mag1 = Math.sqrt(v1x * v1x + v1y * v1y);
+                    const mag2 = Math.sqrt(v2x * v2x + v2y * v2y);
+
+                    if (mag1 === 0 || mag2 === 0) return 2; // Max distance if undefined direction
+
+                    // Cosine similarity is in [-1, 1]. Distance = 1 - similarity (in [0, 2])
+                    return 1 - (dot / (mag1 * mag2));
+                default:
+                    return 0;
+            }
+        }
+
+        function draw() {
+            const cx = center.x;
+            const cy = center.y;
+
+            // Normalize distances for visualization
+            // We need a max distance to map to [0, 1]
+            let maxDist = 1;
+            if (currentMetric === 'l2') maxDist = Math.sqrt(width * width + height * height);
+            else if (currentMetric === 'l1') maxDist = width + height;
+            else if (currentMetric === 'linf') maxDist = Math.max(width, height);
+            else if (currentMetric === 'cosine') maxDist = 2; // 1 - (-1)
+
+            let idx = 0;
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const d = getDistance(x, y, cx, cy, currentMetric);
+
+                    // Normalize 0-1
+                    let t = d / maxDist;
+
+                    // Enhance contrast for Cosine
+                    if (currentMetric === 'cosine') {
+                        // Cosine distance is usually small, let's scale it
+                        // t is in [0, 1] where 0 is same angle, 1 is opposite
+                        // No special scaling needed if maxDist is correct
+                    } else {
+                        // Zoom in a bit for spatial distances
+                        t = t * 2;
+                    }
+
+                    t = Math.max(0, Math.min(1, t));
+
+                    // Map to color index (0-1000)
+                    const cIdx = Math.floor(t * 1000) * 4;
+
+                    data[idx++] = colorMap[cIdx];
+                    data[idx++] = colorMap[cIdx + 1];
+                    data[idx++] = colorMap[cIdx + 2];
+                    data[idx++] = 255;
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+            updateOverlay();
+        }
+
+        // D3 Overlay for the handle
+        const svg = d3.select("#overlay");
+
+        function updateOverlay() {
+            svg.selectAll("*").remove();
+
+            // Draw origin axes for Cosine
+            if (currentMetric === 'cosine') {
+                const ox = width / 2;
+                const oy = height / 2;
+                svg.append("line")
+                    .attr("x1", ox).attr("y1", 0)
+                    .attr("x2", ox).attr("y2", height)
+                    .attr("stroke", "white")
+                    .attr("stroke-dasharray", "4")
+                    .attr("opacity", 0.5);
+                svg.append("line")
+                    .attr("x1", 0).attr("y1", oy)
+                    .attr("x2", width).attr("y2", oy)
+                    .attr("stroke", "white")
+                    .attr("stroke-dasharray", "4")
+                    .attr("opacity", 0.5);
+
+                // Draw vector line
+                svg.append("line")
+                    .attr("x1", ox).attr("y1", oy)
+                    .attr("x2", center.x).attr("y2", center.y)
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 2);
+            }
+
+            svg.append("circle")
+                .attr("cx", center.x)
+                .attr("cy", center.y)
+                .attr("r", 8)
+                .attr("fill", "white")
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .style("cursor", "grab")
+                .call(d3.drag().on("drag", (event) => {
+                    center.x = Math.max(0, Math.min(width, event.x));
+                    center.y = Math.max(0, Math.min(height, event.y));
+                    draw();
+                }));
+        }
+
+        // Initial draw
+        draw();
+
+    </script>
+</body>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live K-Nearest Neighbors (knn) Classification</title>
+<style>
+    :root {
+        color-scheme: light dark;
+    }
+
+    body {
+        margin: 0;
+        padding: 1rem;
+        font-family: system-ui, -apple-system, sans-serif;
+        overflow: hidden;
+        /* Prevent scrollbars */
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
+
+    /* Inherit colors from parent (dark mode support) */
+    body,
+    .observablehq {
+        color: inherit;
+        background: transparent;
+    }
+
+    /* Make sliders and inputs inherit theme colors */
+    input[type="range"] {
+        width: 100%;
+    }
+
+    /* Observable containers should not overflow */
+    .observablehq--inspect {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    body.dark {
+        color-scheme: dark;
+        color: #eee;
+    }
+</style>
+
+<body>
+    <script type="module">
+
+        import define from "./index.js";
+        import { Runtime, Library, Inspector } from "./runtime.js";
+
+        const runtime = new Runtime();
+        // Only render cells that return DOM elements (the visualization and sliders)
+        // Hide intermediate variables by returning null for named cells
+        const main = runtime.module(define, (name) => {
+            // These are the cells we want to display (sliders and the main viz)
+            if (name === "viewof numTrain" || name === "viewof k") {
+                return new Inspector(document.body);
+            }
+            // The main visualization is in an unnamed cell, so Inspector.into will render it
+            if (!name) {
+                return new Inspector(document.body);
+            }
+            // Hide all other named cells (intermediate variables)
+            return true;
+        });
+
+    </script>
+    <script>
+        function syncTheme() {
+            let isDark = false;
+            try {
+                const parentHtml = window.parent.document.documentElement;
+                const savedTheme = parentHtml.getAttribute('saved-theme');
+                if (savedTheme === 'dark') {
+                    isDark = true;
+                } else if (savedTheme === 'light') {
+                    isDark = false;
+                } else {
+                    isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+            } catch (e) {
+                isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            if (isDark) document.body.classList.add('dark');
+            else document.body.classList.remove('dark');
+        }
+
+        syncTheme();
+
+        try {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === "attributes" && mutation.attributeName === "saved-theme") {
+                        syncTheme();
+                    }
+                });
+            });
+            observer.observe(window.parent.document.documentElement, { attributes: true });
+        } catch (e) { }
+    </script>
+</body>

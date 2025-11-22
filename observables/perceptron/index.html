@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perceptron Interactif</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: transparent;
+        }
+
+        #app {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark #app {
+            background: rgba(30, 30, 30, 0.95);
+            color: #eee;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        body.dark h2 {
+            color: #eee;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        body.dark .controls {
+            background: #2a2a2a;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        body.dark label {
+            color: #bbb;
+        }
+
+        input[type="range"] {
+            width: 150px;
+        }
+
+        .value-display {
+            font-size: 13px;
+            color: #666;
+            font-family: monospace;
+        }
+
+        body.dark .value-display {
+            color: #aaa;
+        }
+
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: crosshair;
+            display: block;
+            margin: 0 auto;
+        }
+
+        body.dark canvas {
+            border-color: #444;
+            background: #1e1e1e;
+        }
+
+        .info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        body.dark .info {
+            background: #1e2a38;
+            color: #ccc;
+        }
+
+        .equation {
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        body.dark .equation {
+            background: #332b00;
+            color: #eee;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #1976d2;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h2>🧠 Perceptron Interactif</h2>
+
+        <div class="equation">
+            y = sign(w₁·x₁ + w₂·x₂ + b)
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="w1">Poids w₁</label>
+                <input type="range" id="w1" min="-5" max="5" step="0.1" value="1">
+                <span class="value-display" id="w1-val">1.0</span>
+            </div>
+
+            <div class="control-group">
+                <label for="w2">Poids w₂</label>
+                <input type="range" id="w2" min="-5" max="5" step="0.1" value="1">
+                <span class="value-display" id="w2-val">1.0</span>
+            </div>
+
+            <div class="control-group">
+                <label for="bias">Biais b</label>
+                <input type="range" id="bias" min="-5" max="5" step="0.1" value="0">
+                <span class="value-display" id="bias-val">0.0</span>
+            </div>
+
+            <div class="control-group">
+                <button id="reset">Réinitialiser</button>
+            </div>
+        </div>
+
+        <canvas id="canvas" width="600" height="600"></canvas>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e91e63;"></div>
+                <span>Classe -1 (clic gauche)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #2196f3;"></div>
+                <span>Classe +1 (clic droit)</span>
+            </div>
+        </div>
+
+        <div class="info">
+            <strong>Instructions :</strong> Cliquez (gauche/droit) pour ajouter des points.
+            Ajustez les poids et le biais pour trouver une droite qui sépare les deux classes.
+            La ligne noire représente la frontière de décision : w₁·x₁ + w₂·x₂ + b = 0
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const w1Input = document.getElementById('w1');
+        const w2Input = document.getElementById('w2');
+        const biasInput = document.getElementById('bias');
+        const w1Val = document.getElementById('w1-val');
+        const w2Val = document.getElementById('w2-val');
+        const biasVal = document.getElementById('bias-val');
+        const resetBtn = document.getElementById('reset');
+
+        let points = [];
+        let w1 = 1, w2 = 1, bias = 0;
+
+        // Fonctions utilitaires
+        function canvasToCoord(px, py) {
+            return {
+                x: (px / canvas.width) * 10 - 5,
+                y: 5 - (py / canvas.height) * 10
+            };
+        }
+
+        function coordToCanvas(x, y) {
+            return {
+                px: ((x + 5) / 10) * canvas.width,
+                py: ((5 - y) / 10) * canvas.height
+            };
+        }
+
+        function predict(x, y) {
+            return w1 * x + w2 * y + bias >= 0 ? 1 : -1;
+        }
+
+        function draw() {
+            const isDark = document.body.classList.contains('dark');
+            // Clear
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Grille
+            ctx.strokeStyle = isDark ? '#333' : '#eee';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const pos = (i / 10) * canvas.width;
+                ctx.beginPath();
+                ctx.moveTo(pos, 0);
+                ctx.lineTo(pos, canvas.height);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, pos);
+                ctx.lineTo(canvas.width, pos);
+                ctx.stroke();
+            }
+
+            // Axes
+            ctx.strokeStyle = isDark ? '#666' : '#ccc';
+            ctx.lineWidth = 2;
+            const origin = coordToCanvas(0, 0);
+            ctx.beginPath();
+            ctx.moveTo(0, origin.py);
+            ctx.lineTo(canvas.width, origin.py);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(origin.px, 0);
+            ctx.lineTo(origin.px, canvas.height);
+            ctx.stroke();
+
+            // Régions de décision (couleur de fond)
+            const gridSize = 20;
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const coord = canvasToCoord(
+                        (i / gridSize) * canvas.width,
+                        (j / gridSize) * canvas.height
+                    );
+                    const pred = predict(coord.x, coord.y);
+                    ctx.fillStyle = pred > 0 ? 'rgba(33, 150, 243, 0.05)' : 'rgba(233, 30, 99, 0.05)';
+                    ctx.fillRect(
+                        (i / gridSize) * canvas.width,
+                        (j / gridSize) * canvas.height,
+                        canvas.width / gridSize,
+                        canvas.height / gridSize
+                    );
+                }
+            }
+
+            // Frontière de décision : w1*x + w2*y + b = 0 => y = -(w1*x + b)/w2
+            if (Math.abs(w2) > 0.01) {
+                ctx.strokeStyle = isDark ? '#fff' : '#000';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                const x1 = -5;
+                const y1 = -(w1 * x1 + bias) / w2;
+                const x2 = 5;
+                const y2 = -(w1 * x2 + bias) / w2;
+                const p1 = coordToCanvas(x1, y1);
+                const p2 = coordToCanvas(x2, y2);
+                ctx.moveTo(p1.px, p1.py);
+                ctx.lineTo(p2.px, p2.py);
+                ctx.stroke();
+            } else if (Math.abs(w1) > 0.01) {
+                // Ligne verticale : x = -b/w1
+                ctx.strokeStyle = isDark ? '#fff' : '#000';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                const x = -bias / w1;
+                const p1 = coordToCanvas(x, -5);
+                const p2 = coordToCanvas(x, 5);
+                ctx.moveTo(p1.px, p1.py);
+                ctx.lineTo(p2.px, p2.py);
+                ctx.stroke();
+            }
+
+            // Points
+            points.forEach(p => {
+                const pos = coordToCanvas(p.x, p.y);
+                const pred = predict(p.x, p.y);
+                const correct = pred === p.label;
+
+                ctx.fillStyle = p.label > 0 ? '#2196f3' : '#e91e63';
+                ctx.beginPath();
+                ctx.arc(pos.px, pos.py, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Bordure si mauvaise classification
+                if (!correct) {
+                    ctx.strokeStyle = '#f44336';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(pos.px, pos.py, 11, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            });
+        }
+
+        // Event listeners
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const px = e.clientX - rect.left;
+            const py = e.clientY - rect.top;
+            const coord = canvasToCoord(px, py);
+            points.push({ x: coord.x, y: coord.y, label: 1 });
+            draw();
+        });
+
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const px = e.clientX - rect.left;
+            const py = e.clientY - rect.top;
+            const coord = canvasToCoord(px, py);
+            points.push({ x: coord.x, y: coord.y, label: -1 });
+            draw();
+        });
+
+        w1Input.addEventListener('input', (e) => {
+            w1 = parseFloat(e.target.value);
+            w1Val.textContent = w1.toFixed(1);
+            draw();
+        });
+
+        w2Input.addEventListener('input', (e) => {
+            w2 = parseFloat(e.target.value);
+            w2Val.textContent = w2.toFixed(1);
+            draw();
+        });
+
+        biasInput.addEventListener('input', (e) => {
+            bias = parseFloat(e.target.value);
+            biasVal.textContent = bias.toFixed(1);
+            draw();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            points = [];
+            w1 = 1;
+            w2 = 1;
+            bias = 0;
+            w1Input.value = 1;
+            w2Input.value = 1;
+            biasInput.value = 0;
+            w1Val.textContent = '1.0';
+            w2Val.textContent = '1.0';
+            biasVal.textContent = '0.0';
+            draw();
+        });
+
+        // Initial draw
+        // draw(); // Called by syncTheme
+
+        function syncTheme() {
+            let isDark = false;
+            try {
+                const parentHtml = window.parent.document.documentElement;
+                const savedTheme = parentHtml.getAttribute('saved-theme');
+                if (savedTheme === 'dark') {
+                    isDark = true;
+                } else if (savedTheme === 'light') {
+                    isDark = false;
+                } else {
+                    isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+            } catch (e) {
+                isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            if (isDark) document.body.classList.add('dark');
+            else document.body.classList.remove('dark');
+
+            draw();
+        }
+
+        syncTheme();
+
+        try {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === "attributes" && mutation.attributeName === "saved-theme") {
+                        syncTheme();
+                    }
+                });
+            });
+            observer.observe(window.parent.document.documentElement, { attributes: true });
+        } catch (e) { }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "@jwilber/live-k-nearest-neighbors-classification",
+  "main": "47259f70c12a1351@288.js",
+  "version": "288.0.0",
+  "homepage": "https://observablehq.com/@jwilber/live-k-nearest-neighbors-classification",
+  "author": {
+    "name": "Jared Wilber",
+    "url": "https://observablehq.com/@jwilber"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}

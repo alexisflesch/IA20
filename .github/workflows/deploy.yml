@@ -1,0 +1,73 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          
+      - name: Install Dependencies (Root)
+        run: npm install
+        
+      - name: Build Observables
+        run: npm run build:observables
+        
+      - name: Build Website (Quartz)
+        run: npm run build:website
+          
+      - name: Build Slides
+        run: npm run build:slides
+          
+      - name: Merge Sites
+        run: |
+          # Create dist directory
+          mkdir -p dist
+          
+          # Copy Website (Quartz) to root
+          cp -r website/public/* dist/
+          
+          # Copy Slides to /slides
+          mkdir -p dist/slides
+          cp -r slides/public/* dist/slides/
+          
+          # Copy Observables to /observables (Quartz might have done it, but let's be safe)
+          # Note: build:observables outputs to public/observables at root
+          cp -r public/observables dist/
+          
+          # Create CNAME for custom domain
+          echo "ia20.alexisfles.ch" > dist/CNAME
+          
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

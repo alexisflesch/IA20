@@ -1,0 +1,15 @@
+{
+    "name": "ia20-slides",
+    "description": "Slides Reveal.js pour le cours IA L2",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "npm run build && npx serve public -l 8081",
+        "build": "node ./scripts/build-slides.mjs",
+        "test": "node ./scripts/test-slides.mjs"
+    },
+    "devDependencies": {
+        "serve": "^14.2.0"
+    }
+}
