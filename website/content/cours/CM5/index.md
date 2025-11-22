@@ -70,6 +70,39 @@ Le perceptron ne peut classifier que des données **linéairement séparables**.
 
 Ces 4 points ne peuvent pas être séparés par une seule droite ! C'est la **crise du perceptron** des années 1970.
 
+> **Visualisation** :
+>
+> <div style="display: flex; justify-content: center; margin: 20px 0;">
+>   <svg width="200" height="200" viewBox="-20 -20 140 140" style="background: white; border: 1px solid #ccc;">
+>     <!-- Axes -->
+>     <line x1="0" y1="100" x2="100" y2="100" stroke="black" stroke-width="2" />
+>     <line x1="0" y1="100" x2="0" y2="0" stroke="black" stroke-width="2" />
+>     
+>     <!-- Points -->
+>     <!-- (0,0) -> 0 (Rouge) -->
+>     <circle cx="10" cy="90" r="5" fill="red" />
+>     <text x="15" y="85" font-size="10" fill="red">(0,0)</text>
+>     
+>     <!-- (1,1) -> 0 (Rouge) -->
+>     <circle cx="90" cy="10" r="5" fill="red" />
+>     <text x="75" y="25" font-size="10" fill="red">(1,1)</text>
+>     
+>     <!-- (1,0) -> 1 (Bleu) -->
+>     <circle cx="90" cy="90" r="5" fill="blue" />
+>     <text x="75" y="85" font-size="10" fill="blue">(1,0)</text>
+>     
+>     <!-- (0,1) -> 1 (Bleu) -->
+>     <circle cx="10" cy="10" r="5" fill="blue" />
+>     <text x="15" y="25" font-size="10" fill="blue">(0,1)</text>
+>     
+>     <!-- Impossible Line -->
+>     <line x1="0" y1="0" x2="100" y2="100" stroke="gray" stroke-dasharray="4" />
+>     <text x="40" y="50" font-size="10" fill="gray">Impossible ?</text>
+>   </svg>
+> </div>
+>
+> Essayez de tracer **une seule ligne droite** qui met tous les Rouges d'un côté et tous les Bleus de l'autre. C'est impossible. Il faut une courbe (ou deux droites).
+
 **Solution** : Empiler plusieurs perceptrons en couches → **réseau multicouche**.
 
 ---
@@ -107,6 +140,13 @@ Où $f$ est une **fonction d'activation** non linéaire.
 ## 4. Fonctions d'activation
 
 Les fonctions d'activation introduisent de la **non-linéarité**, permettant au réseau d'apprendre des relations complexes.
+
+> **Pourquoi est-ce crucial ?**
+> Si on n'avait pas de fonction d'activation (ou juste une fonction linéaire $f(x)=ax$), empiler des couches ne servirait à rien.
+> *   Mathématiquement : $W_2(W_1 x) = (W_2 W_1) x = W_{total} x$.
+> *   Deux couches linéaires équivalent à une seule couche linéaire.
+>
+> C'est la **non-linéarité** (la courbure) qui permet au réseau de tordre l'espace pour résoudre des problèmes comme XOR.
 
 ### 4.1 Sigmoïde
 
@@ -192,6 +232,25 @@ Imaginez que vous êtes dans le brouillard au sommet d'une montagne (erreur éle
 - Vous recommencez jusqu'à atteindre le fond
 
 **Rétropropagation** (backpropagation) : algorithme efficace pour calculer les gradients en propageant l'erreur de la sortie vers l'entrée.
+
+### 5.4 Mathématiques de la Rétropropagation (Chain Rule)
+
+Pour comprendre comment l'erreur se propage, il faut utiliser la règle de dérivation en chaîne.
+Prenons un réseau très simple : $x \xrightarrow{w_1} h \xrightarrow{w_2} \hat{y}$.
+*   $h = \sigma(w_1 x)$
+*   $\hat{y} = \sigma(w_2 h)$
+*   Erreur $E = \frac{1}{2}(\hat{y} - y)^2$
+
+On veut savoir comment changer $w_1$ pour réduire $E$. On cherche $\frac{\partial E}{\partial w_1}$.
+
+$$ \frac{\partial E}{\partial w_1} = \frac{\partial E}{\partial \hat{y}} \times \frac{\partial \hat{y}}{\partial h} \times \frac{\partial h}{\partial w_1} $$
+
+C'est le produit des dérivées locales :
+1.  **Dérivée de l'erreur** : $\frac{\partial E}{\partial \hat{y}} = (\hat{y} - y)$
+2.  **Dérivée de la sortie** : $\frac{\partial \hat{y}}{\partial h} = \sigma'(w_2 h) \cdot w_2$
+3.  **Dérivée de la couche cachée** : $\frac{\partial h}{\partial w_1} = \sigma'(w_1 x) \cdot x$
+
+L'algorithme calcule ces termes de la fin vers le début (d'où "Rétro"-propagation) et les multiplie.
 
 > **Note pour les matheux** : La rétropropagation n'est rien d'autre qu'une application récursive du **théorème de dérivation des fonctions composées** (Chain Rule).
 > Si $y = f(g(x))$, alors $\frac{dy}{dx} = f'(g(x)) \times g'(x)$.

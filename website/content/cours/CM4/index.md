@@ -32,7 +32,9 @@ C'est l'algorithme roi du clustering. Son but est de partitionner les données e
 
 ### 2.1 L'Algorithme des Centres Mobiles
 
-C'est un algorithme itératif (qui se répète en boucle).
+C'est un algorithme itératif qui cherche à minimiser l'**Inertie Intra-Classe** (la somme des carrés des distances entre chaque point et le centre de son cluster).
+
+$$ J = \sum_{j=1}^{K} \sum_{x_i \in C_j} ||x_i - \mu_j||^2 $$
 
 1.  **Initialisation** : On place **K** points au hasard dans l'espace. Ce sont nos "Centres" (ou Centroïdes) provisoires.
 2.  **Affectation** : Pour chaque point de données, on regarde quel est le Centre le plus proche et on lui attribue sa couleur.
@@ -47,7 +49,7 @@ Expérimentez par vous-même !
 3.  Avancez pas à pas avec **"Étape +1"** ou lancez **"Auto"**.
 4.  *Bonus* : Cliquez n'importe où pour ajouter des points en temps réel.
 
-<iframe class="embedded-notebook" src="/observables/kmeans/" width="100%" height="600" frameborder="0" style="border: 1px solid #eee; border-radius: 8px;"></iframe>
+<iframe class="embedded-notebook" src="/observables/kmeans/" width="100%" height="800" frameborder="0" style="border: 1px solid #eee; border-radius: 8px;"></iframe>
 
 ### 2.3 Comment choisir K ? (La méthode du Coude)
 
@@ -56,6 +58,14 @@ L'algorithme a besoin qu'on lui dise combien de groupes chercher ($K$). Mais sou
 Pour choisir, on trace la courbe de l'**Inertie** (la somme des distances entre les points et leur centre) en fonction de $K$.
 *   Plus $K$ augmente, plus l'inertie baisse (avec $K=N$, l'inertie est nulle, chaque point est son propre groupe).
 *   On cherche le point d'inflexion, le **"Coude"** (Elbow), où le gain de performance commence à devenir négligeable par rapport à la complexité ajoutée.
+
+> **Visualisation Mentale** :
+> Imaginez un bras plié.
+> *   L'épaule (K=1) : Inertie très haute.
+> *   Le coude (K=3) : L'inertie a beaucoup baissé, le bras change de direction.
+> *   Le poignet (K=10) : L'inertie continue de baisser mais doucement.
+>
+> On choisit le **coude**.
 
 ---
 
@@ -86,7 +96,7 @@ C'est la **Malédiction de la Dimension** (Curse of Dimensionality) : l'espace d
 
 L'Analyse en Composantes Principales (PCA) permet de "résumer" ces données en gardant le maximum d'information.
 
-### 3.1 L'Intuition de l'Ombre
+### 4.1 L'Intuition de l'Ombre
 
 Imaginez une théière (objet 3D). Vous voulez la prendre en photo (projection 2D) pour qu'on la reconnaisse le mieux possible.
 *   Si vous la prenez du dessus, on voit juste un rond (le couvercle). On a perdu l'info "anse" et "bec". C'est une mauvaise projection.
@@ -94,18 +104,20 @@ Imaginez une théière (objet 3D). Vous voulez la prendre en photo (projection 2
 
 La PCA cherche mathématiquement cet "angle de vue" optimal. Elle cherche les axes où les données sont les plus **étalées** (là où la **variance** est maximale).
 
-### 3.3 Le Coin des Matheux : Diagonalisation
+### 4.2 Le Coin des Matheux : Diagonalisation
 
 Pour ceux qui ont fait de l'algèbre linéaire, la PCA n'est rien d'autre qu'une **diagonalisation de la matrice de covariance**.
-1.  On calcule la matrice de covariance $\Sigma$ des données (symétrique réelle).
-2.  On cherche ses **valeurs propres** ($\lambda$) et **vecteurs propres** ($v$).
-3.  Les vecteurs propres sont les "Axes Principaux" (la direction de la théière).
-4.  Les valeurs propres indiquent la quantité d'information (variance) portée par chaque axe.
-5.  On garde les $k$ vecteurs associés aux plus grandes valeurs propres.
+1.  On centre les données (moyenne nulle).
+2.  On calcule la matrice de covariance $\Sigma = \frac{1}{N} X^T X$.
+3.  On cherche ses **valeurs propres** ($\lambda$) et **vecteurs propres** ($v$) tels que $\Sigma v = \lambda v$.
+4.  Les vecteurs propres sont les "Axes Principaux" (la direction de la théière).
+5.  Les valeurs propres indiquent la quantité d'information (variance) portée par chaque axe.
+    *   La proportion de variance expliquée par l'axe $k$ est $\frac{\lambda_k}{\sum \lambda_i}$.
+6.  On garde les $k$ vecteurs associés aux plus grandes valeurs propres.
 
 C'est une application directe de la réduction d'endomorphisme !
 
-### 3.2 À quoi ça sert ?
+### 4.3 À quoi ça sert ?
 
 1.  **Visualisation** : On ne peut pas dessiner un graphique en 100 dimensions. On utilise la PCA pour projeter les données en 2D ou 3D et voir s'il y a des groupes.
 2.  **Compression** : On garde 95% de l'information avec 10 fois moins de stockage.

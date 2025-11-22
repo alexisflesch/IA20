@@ -11,6 +11,13 @@ export default ((opts?: Options) => {
   const Footer: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
+    const hasLinks = Object.keys(links).length > 0
+
+    // Don't render footer if there are no links
+    if (!hasLinks) {
+      return null
+    }
+
     return (
       <footer class={`${displayClass ?? ""}`}>
         <p>

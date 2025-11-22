@@ -32,7 +32,7 @@ On coupe les données en deux :
 Le modèle apprend "trop bien" le Train Set (y compris le bruit), mais échoue sur le Test Set.
 *   *Analogie* : L'étudiant qui apprend les exos par cœur mais rate l'examen si on change les chiffres.
 
-<iframe class="embedded-notebook" src="/observables/overfitting/index.html" width="100%" height="400px"></iframe>
+<iframe class="embedded-notebook" src="/observables/overfitting/index.html" width="100%" height="600px"></iframe>
 
 <!-- SLIDE -->
 

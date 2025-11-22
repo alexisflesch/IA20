@@ -66,6 +66,13 @@ Prenons un classifieur binaire (Chat vs Non-Chat) :
 | **Vrai : CHAT** | **Vrai Positif (VP)** <br> *(Bravo !)* | **Faux Négatif (FN)** <br> *(Loupé, c'était un chat)* |
 | **Vrai : NON-CHAT** | **Faux Positif (FP)** <br> *(Fausse alerte)* | **Vrai Négatif (VN)** <br> *(Bravo !)* |
 
+> **Exemple Numérique** :
+> Sur 100 images (50 chats, 50 chiens) :
+> *   **VP = 40** (40 chats bien reconnus)
+> *   **FN = 10** (10 chats ratés, pris pour des chiens)
+> *   **FP = 5** (5 chiens pris pour des chats)
+> *   **VN = 45** (45 chiens bien reconnus)
+
 ### 2.2 Les Métriques Dérivées
 
 À partir de ces 4 nombres, on calcule des scores plus fins :
@@ -116,6 +123,16 @@ C'est l'inverse. Le modèle est trop simple pour capturer la logique des donnée
 
 ### 3.3 Le Compromis Biais-Variance
 
+En statistique, l'erreur d'un modèle se décompose en trois termes (Décomposition Biais-Variance) :
+
+$$ E[(y - \hat{f}(x))^2] = \text{Biais}^2 + \text{Variance} + \sigma^2 $$
+
+1.  **Biais (Bias)** : Erreur due à des hypothèses trop simplistes (ex: croire que tout est une ligne droite). Un fort biais entraîne du **Sous-apprentissage**.
+2.  **Variance** : Erreur due à une trop grande sensibilité aux petites fluctuations du jeu d'entraînement. Une forte variance entraîne du **Sur-apprentissage**.
+3.  **Erreur Irréductible ($\sigma^2$)** : Le bruit inhérent aux données, qu'aucun modèle ne peut prédire.
+
+On cherche le juste milieu (le "Sweet Spot") pour minimiser la somme Biais² + Variance.
+
 | État | Performance Train | Performance Test | Diagnostic | Solution |
 | :--- | :--- | :--- | :--- | :--- |
 | **Underfitting** | Mauvaise | Mauvaise | Modèle trop simple | Complexifier le modèle (plus de paramètres). |
@@ -129,7 +146,7 @@ Jouez avec le **degré du polynôme** (la complexité du modèle).
 *   **Degré 3-4** : Bon modèle. Il capture la forme générale.
 *   **Degré 10+** : Overfitting. Le modèle (rouge) passe par tous les points bleus (Train Error $\approx$ 0) mais fait n'importe quoi entre les deux (Test Error explose).
 
-<iframe class="embedded-notebook" src="/observables/overfitting/" width="100%" height="600" frameborder="0" style="border: 1px solid #eee; border-radius: 8px;"></iframe>
+<iframe class="embedded-notebook" src="/observables/overfitting/" width="100%" height="800" frameborder="0" style="border: 1px solid #eee; border-radius: 8px;"></iframe>
 
 ---
 

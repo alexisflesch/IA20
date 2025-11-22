@@ -52,6 +52,11 @@ Pour qu'un ordinateur puisse traiter une information (une image, une phrase, un 
 
 En mathématiques, une liste ordonnée de nombres s'appelle un **vecteur**.
 
+> **Définition Formelle** :
+> Un vecteur $\mathbf{x}$ de dimension $d$ appartient à l'espace vectoriel $\mathbb{R}^d$.
+> $$ \mathbf{x} \in \mathbb{R}^d \iff \mathbf{x} = (x_1, x_2, ..., x_d) $$
+> où chaque $x_i$ est un nombre réel.
+
 ### 2.1 Données Tabulaires (Structurées)
 
 C'est le cas le plus simple. Imaginez un fichier Excel décrivant des appartements. Chaque ligne est un **exemple** (ou *sample*), chaque colonne est une **caractéristique** (ou *feature*).
@@ -72,6 +77,41 @@ Une image numérique est une grille de pixels.
 *   **Noir et Blanc** : Chaque pixel est un nombre entre 0 (noir) et 255 (blanc).
     *   Une image de $28 \times 28$ pixels contient $28 \times 28 = 784$ nombres.
     *   Pour l'IA, on "aplatit" cette grille pour en faire un vecteur géant de dimension 784.
+
+> **Visualisation : Aplatir une image (Flattening)**
+>
+> <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin: 20px 0;">
+>   <!-- Grid 3x3 -->
+>   <div style="display: grid; grid-template-columns: repeat(3, 30px); gap: 2px;">
+>     <div style="width: 30px; height: 30px; background: #ddd; display: flex; align-items: center; justify-content: center;">1</div>
+>     <div style="width: 30px; height: 30px; background: #ddd; display: flex; align-items: center; justify-content: center;">2</div>
+>     <div style="width: 30px; height: 30px; background: #ddd; display: flex; align-items: center; justify-content: center;">3</div>
+>     <div style="width: 30px; height: 30px; background: #ccc; display: flex; align-items: center; justify-content: center;">4</div>
+>     <div style="width: 30px; height: 30px; background: #ccc; display: flex; align-items: center; justify-content: center;">5</div>
+>     <div style="width: 30px; height: 30px; background: #ccc; display: flex; align-items: center; justify-content: center;">6</div>
+>     <div style="width: 30px; height: 30px; background: #bbb; display: flex; align-items: center; justify-content: center;">7</div>
+>     <div style="width: 30px; height: 30px; background: #bbb; display: flex; align-items: center; justify-content: center;">8</div>
+>     <div style="width: 30px; height: 30px; background: #bbb; display: flex; align-items: center; justify-content: center;">9</div>
+>   </div>
+>   
+>   <div style="font-size: 24px;">→</div>
+>   
+>   <!-- Vector -->
+>   <div style="display: flex; flex-direction: column; gap: 2px; border: 1px solid #333; padding: 5px; border-radius: 4px;">
+>     <div style="width: 30px; height: 20px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 12px;">1</div>
+>     <div style="width: 30px; height: 20px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 12px;">2</div>
+>     <div style="width: 30px; height: 20px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 12px;">3</div>
+>     <div style="width: 30px; height: 20px; background: #ccc; display: flex; align-items: center; justify-content: center; font-size: 12px;">4</div>
+>     <div style="width: 30px; height: 20px; background: #ccc; display: flex; align-items: center; justify-content: center; font-size: 12px;">5</div>
+>     <div style="width: 30px; height: 20px; background: #ccc; display: flex; align-items: center; justify-content: center; font-size: 12px;">6</div>
+>     <div style="width: 30px; height: 20px; background: #bbb; display: flex; align-items: center; justify-content: center; font-size: 12px;">7</div>
+>     <div style="width: 30px; height: 20px; background: #bbb; display: flex; align-items: center; justify-content: center; font-size: 12px;">8</div>
+>     <div style="width: 30px; height: 20px; background: #bbb; display: flex; align-items: center; justify-content: center; font-size: 12px;">9</div>
+>   </div>
+> </div>
+>
+> On découpe chaque ligne et on les met bout à bout.
+
 *   **Couleur (RGB)** : Chaque pixel a 3 valeurs (Rouge, Vert, Bleu).
     *   Une image $28 \times 28$ couleur est un vecteur de dimension $28 \times 28 \times 3 = 2352$.
 
@@ -98,7 +138,7 @@ Une fois que nos données sont des points dans un espace vectoriel, on peut mesu
 *   Deux appartements proches dans l'espace vectoriel ont des prix similaires.
 *   Deux images proches (pixel par pixel) se ressemblent visuellement.
 
-<iframe class="embedded-notebook" src="/observables/distances/index.html" width="100%" height="750px" style="border:none;"></iframe>
+<iframe class="embedded-notebook" src="/observables/distances/index.html" width="100%" height="850px" style="border:none;"></iframe>
 
 ### 3.1 La Distance Euclidienne ($L_2$)
 
@@ -136,6 +176,9 @@ Ces deux textes ont le même sens, mais le vecteur B est deux fois plus long. La
 La **Similarité Cosinus** mesure l'angle $\theta$ entre les deux vecteurs.
 
 $$ \text{Cosinus}(\mathbf{u}, \mathbf{v}) = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \|\mathbf{v}\|} $$
+
+Où le produit scalaire $\mathbf{u} \cdot \mathbf{v}$ se calcule ainsi :
+$$ \mathbf{u} \cdot \mathbf{v} = \sum_{i=1}^{d} u_i \times v_i = u_1 v_1 + u_2 v_2 + ... + u_d v_d $$
 
 *   Si $\cos(\theta) = 1$ : Angle de $0$ rad (Vecteurs colinéaires, sens identique).
 *   Si $\cos(\theta) = 0$ : Angle de $\frac{\pi}{2}$ rad (Vecteurs orthogonaux, rien à voir).

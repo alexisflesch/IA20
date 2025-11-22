@@ -54,7 +54,7 @@ $$ y = ax + b $$
 Essayez de placer des points pour voir comment la droite s'ajuste automatiquement pour minimiser l'erreur (MSE).
 Remarquez comment un seul point aberrant (outlier) peut "tirer" la droite vers lui.
 
-<iframe class="embedded-notebook" src="/observables/linear-regression/" width="100%" height="600" frameborder="0" style="border: 1px solid #eee; border-radius: 8px;"></iframe>
+<iframe class="embedded-notebook" src="/observables/linear-regression/" width="100%" height="800" frameborder="0" style="border: 1px solid #eee; border-radius: 8px;"></iframe>
 
 ### 2.4 Minimiser l'erreur
 
@@ -74,7 +74,10 @@ Imaginez que vous êtes en haut d'une montagne (l'erreur est haute) et que vous 
 2.  Vous faites un petit pas dans le sens de la descente.
 3.  Vous recommencez.
 
-Mathématiquement, on calcule la dérivée de l'erreur par rapport à $a$ et $b$, et on met à jour les paramètres petit à petit.
+Mathématiquement, on utilise la **dérivée**.
+> **Intuition** : La dérivée nous donne la pente de la tangente. Si la pente est positive (ça monte), on doit aller à gauche (diminuer $a$). Si la pente est négative (ça descend), on doit aller à droite (augmenter $a$).
+
+On met à jour les paramètres petit à petit dans la direction opposée à la pente.
 
 > **Coin des Matheux : Solution Analytique vs Itérative**
 >
@@ -138,11 +141,14 @@ Dans le KNN classique, tous les voisins ont le même poids de vote.
 | :--- | :--- |
 | Très simple à comprendre et à coder. | **Lent** si beaucoup de données (doit calculer toutes les distances à chaque fois). |
 | Pas d'entraînement (Lazy Learning). | Sensible aux données non normalisées (voir Chapitre 1). |
-| Marche bien pour des frontières complexes. | Souffre de la "Malédiction de la dimension" (si trop de variables). |
+| Marche bien pour des frontières complexes. | Souffre de la "Malédiction de la dimension". |
+
+> **La Malédiction de la Dimension (Curse of Dimensionality)** :
+> Plus on ajoute de variables (colonnes), plus l'espace devient "vaste" et vide. En très haute dimension (ex: 1000 variables), tous les points deviennent très éloignés les uns des autres. La notion de "voisin proche" perd de son sens, car tout le monde est loin de tout le monde !
 
 ### 3.5 Visualisation Interactive
 
-<iframe class="embedded-notebook" src="/observables/knn/" width="100%" height="600" frameborder="0"></iframe>
+<iframe class="embedded-notebook" src="/observables/knn/" width="100%" height="800" frameborder="0"></iframe>
 
 ---
 
@@ -166,11 +172,34 @@ L'idée est de découper l'espace des données en rectangles de plus en plus pet
 
 Comment l'ordinateur choisit-il les questions ? Il cherche la question qui sépare le mieux les classes, c'est-à-dire qui maximise la **pureté** des groupes créés.
 
-On utilise souvent l'indice de **Gini** pour mesurer l'impureté :
-*   **Gini = 0** : Le groupe est pur (que des points bleus).
-*   **Gini = 0.5** : Le groupe est mélangé (autant de bleus que de rouges).
+#### A. L'Indice de Gini (Impureté)
 
-À chaque étape, l'algo teste toutes les coupures possibles et garde celle qui fait le plus baisser le Gini moyen.
+C'est la mesure standard utilisée par l'algorithme CART (Classification And Regression Trees).
+Pour un groupe contenant des éléments de $C$ classes, l'indice de Gini est :
+
+$$ G = 1 - \sum_{i=1}^{C} p_i^2 $$
+
+Où $p_i$ est la proportion d'éléments de la classe $i$ dans le groupe.
+
+*   **Gini = 0** : Le groupe est pur (ex: 100% de Bleus). $1 - (1^2 + 0^2) = 0$.
+*   **Gini = 0.5** : Le groupe est parfaitement mélangé (50% Bleus, 50% Rouges). $1 - (0.5^2 + 0.5^2) = 1 - 0.5 = 0.5$.
+
+#### B. L'Entropie de Shannon (Désordre)
+
+Une autre mesure très utilisée (notamment dans l'algorithme C4.5) est l'**Entropie**, issue de la théorie de l'information.
+
+$$ H = - \sum_{i=1}^{C} p_i \log_2(p_i) $$
+
+*   **Entropie = 0** : Ordre parfait (groupe pur).
+*   **Entropie = 1** : Désordre maximal (mélange 50/50).
+
+#### C. Le Gain d'Information
+
+Pour choisir la meilleure question (le meilleur "split"), l'algorithme calcule le **Gain d'Information** : c'est la différence entre l'impureté avant la coupure et l'impureté moyenne après la coupure.
+
+$$ \text{Gain} = \text{Impureté}_{\text{Parent}} - \sum \frac{N_{\text{Enfant}}}{N_{\text{Total}}} \times \text{Impureté}_{\text{Enfant}} $$
+
+On choisit la coupure qui maximise ce gain (c'est-à-dire qui réduit le plus le désordre).
 
 ### 4.3 Visualisation Interactive
 
@@ -178,7 +207,7 @@ Observez comment l'arbre découpe l'espace.
 *   **Profondeur 1** : Une seule coupure (une ligne droite). C'est un "Decision Stump".
 *   **Profondeur élevée** : L'arbre crée des rectangles très fins pour isoler chaque point. Attention au sur-apprentissage !
 
-<iframe class="embedded-notebook" src="/observables/decision-tree/" width="100%" height="600" frameborder="0" style="border: 1px solid #eee; border-radius: 8px;"></iframe>
+<iframe class="embedded-notebook" src="/observables/decision-tree/" width="100%" height="800" frameborder="0" style="border: 1px solid #eee; border-radius: 8px;"></iframe>
 
 ### 4.4 Avantages et Inconvénients
 

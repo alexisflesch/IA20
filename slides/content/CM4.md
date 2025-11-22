@@ -35,7 +35,7 @@ But : Diviser les données en **K** groupes (clusters).
 
 ## Démo K-Means
 
-<iframe class="embedded-notebook" src="/observables/kmeans/index.html" width="100%" height="500px"></iframe>
+<iframe class="embedded-notebook" src="/observables/kmeans/index.html" width="100%" height="600px"></iframe>
 
 <!-- SLIDE -->
 

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convolution Interactive</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fff;
+            color: #333;
+        }
+
+        h2 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        /* Section 1: Grid Calculation */
+        .calc-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2px;
+            background-color: #ccc;
+            border: 2px solid #333;
+        }
+
+        .cell {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+
+        .cell input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-family: inherit;
+            font-size: inherit;
+            background: transparent;
+        }
+
+        .cell.highlight-input {
+            background-color: rgba(255, 0, 0, 0.2);
+        }
+
+        .cell.highlight-kernel {
+            background-color: rgba(0, 0, 255, 0.2);
+        }
+
+        .cell.highlight-output {
+            background-color: #00bcd4;
+            color: white;
+            font-weight: bold;
+        }
+
+        .operator {
+            font-size: 24px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        /* Section 2: Image Filters */
+        .filter-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #e0e0e0;
+        }
+
+        button.active {
+            background-color: #00bcd4;
+            color: white;
+            border-color: #00acc1;
+        }
+
+        .canvas-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .canvas-label {
+            text-align: center;
+            margin-top: 5px;
+            font-weight: bold;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- PART 1: The Math -->
+        <div>
+            <h2>1. La Mécanique (Le calcul)</h2>
+            <p>Survolez les cases de la <strong>Feature Map</strong> (à droite) pour voir quels pixels de l'image (à
+                gauche) sont utilisés.</p>
+
+            <div class="calc-container">
+                <!-- Input Image -->
+                <div class="grid-wrapper">
+                    <div style="margin-bottom: 5px; font-weight: bold;">Image (5x5)</div>
+                    <div id="input-grid" class="grid"
+                        style="grid-template-columns: repeat(5, 40px); grid-template-rows: repeat(5, 40px);"></div>
+                </div>
+
+                <div class="operator">*</div>
+
+                <!-- Kernel -->
+                <div class="grid-wrapper">
+                    <div style="margin-bottom: 5px; font-weight: bold;">Noyau (3x3)</div>
+                    <div id="kernel-grid" class="grid"
+                        style="grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(3, 40px);"></div>
+                </div>
+
+                <div class="operator">=</div>
+
+                <!-- Output Feature Map -->
+                <div class="grid-wrapper">
+                    <div style="margin-bottom: 5px; font-weight: bold;">Feature Map (3x3)</div>
+                    <div id="output-grid" class="grid"
+                        style="grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(3, 40px);"></div>
+                </div>
+            </div>
+            <div id="calculation-display"
+                style="margin-top: 20px; font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 4px; min-height: 20px;">
+                Survolez une case de sortie...
+            </div>
+        </div>
+
+        <!-- PART 2: The Visuals -->
+        <div>
+            <h2>2. Les Filtres (Le visuel)</h2>
+            <p>Appliquez des noyaux de convolution réels sur une image.</p>
+
+            <div class="filter-controls">
+                <button onclick="applyFilter('identity')" class="active" id="btn-identity">Identité</button>
+                <button onclick="applyFilter('blur')" id="btn-blur">Flou (Blur)</button>
+                <button onclick="applyFilter('sharpen')" id="btn-sharpen">Netteté (Sharpen)</button>
+                <button onclick="applyFilter('edge')" id="btn-edge">Contours (Edge)</button>
+                <button onclick="applyFilter('emboss')" id="btn-emboss">Relief (Emboss)</button>
+            </div>
+
+            <div class="canvas-container">
+                <div>
+                    <canvas id="canvas-source" width="300" height="300"></canvas>
+                    <div class="canvas-label">Image Originale</div>
+                </div>
+                <div>
+                    <canvas id="canvas-target" width="300" height="300"></canvas>
+                    <div class="canvas-label">Résultat Convolué</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function sendHeight() {
+            // Calculate the actual bottom position of all content
+            const allElements = Array.from(document.body.querySelectorAll('*'));
+            let maxBottom = 0;
+            allElements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                maxBottom = Math.max(maxBottom, rect.bottom);
+            });
+            const height = Math.ceil(maxBottom) + 20;
+            window.parent.postMessage({ type: 'resize', height: height }, '*');
+        }
+
+        window.addEventListener('load', sendHeight);
+        window.addEventListener('resize', sendHeight);
+
+        // Use ResizeObserver for dynamic content changes
+        const observer = new ResizeObserver(sendHeight);
+        observer.observe(document.body);
+
+        // Fallback periodic check
+        setInterval(sendHeight, 1000);
+    </script>
+</body>
+
+</html>

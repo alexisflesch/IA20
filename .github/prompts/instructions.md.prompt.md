@@ -40,6 +40,7 @@ The build process is sequential. Always build observables first, as they are dep
     -   Implement a `syncTheme()` function that checks `window.parent.document.documentElement.getAttribute('saved-theme')`.
     -   Listen for `MutationObserver` on the parent's `saved-theme` attribute to toggle `body.dark` or similar classes dynamically.
     -   **Example**: See `observables/linear-regression/index.html` for the reference implementation of `syncTheme`.
+    -   **Mobile Responsiveness**: Always verify that observables render correctly on mobile devices (small screens). Ensure controls are touch-friendly and layout adapts.
 
 ### Content & Math
 -   **Math Notation**: Use KaTeX syntax.

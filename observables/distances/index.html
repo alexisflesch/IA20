@@ -15,9 +15,15 @@
         color: #333;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        overflow: hidden;
+        /* align-items: center; Removed to prevent width issues */
+        overflow-x: hidden;
+        /* Prevent horizontal scroll */
         transition: color 0.3s;
+        box-sizing: border-box;
+    }
+
+    * {
+        box-sizing: border-box;
     }
 
     body.dark {
@@ -34,11 +40,17 @@
     .controls {
         margin-bottom: 10px;
         display: flex;
-        gap: 10px;
+        gap: 8px;
         background: rgba(0, 0, 0, 0.05);
         padding: 8px;
         border-radius: 8px;
         transition: background 0.3s;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     body.dark .controls {
@@ -87,11 +99,16 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         overflow: hidden;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
     }
 
     canvas {
         display: block;
         cursor: crosshair;
+        width: 100%;
+        height: auto;
     }
 
     .overlay {
@@ -110,6 +127,29 @@
         font-size: 0.85em;
         opacity: 0.8;
         color: inherit;
+        text-align: center;
+    }
+
+    @media (max-width: 450px) {
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            padding: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 8px 4px;
+            font-size: 12px;
+            white-space: normal;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+        }
     }
 </style>
 <script src="https://d3js.org/d3.v7.min.js"></script>

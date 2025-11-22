@@ -11,7 +11,7 @@ const config: QuartzConfig = {
     pageTitle: "IA20",
     pageTitleSuffix: "",
     enableSPA: true,
-    enablePopovers: true,
+    enablePopovers: false,
     analytics: {
       provider: "plausible",
     },
@@ -40,12 +40,12 @@ const config: QuartzConfig = {
           textHighlight: "rgba(0, 0, 0, 0)", // Transparent
         },
         darkMode: {
-          light: "#0f172a",
-          lightgray: "#1e293b",
-          gray: "#94a3b8",
-          darkgray: "#cbd5e1",
-          dark: "#f8fafc",
-          secondary: "#38bdf8", // Sky Blue 400
+          light: "#0a0a0a", // Almost black
+          lightgray: "#262626", // Neutral dark gray
+          gray: "#a3a3a3", // Neutral gray
+          darkgray: "#e5e5e5", // Light gray for text
+          dark: "#ffffff", // White for headings
+          secondary: "#38bdf8", // Sky Blue 400 (kept for accent)
           tertiary: "#7dd3fc",  // Sky Blue 300
           highlight: "rgba(0, 0, 0, 0)",
           textHighlight: "rgba(0, 0, 0, 0)",

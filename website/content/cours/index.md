@@ -1,3 +1,7 @@
+---
+title: "Cours"
+---
+
 # Cours IA L2
 
 ## Table des matières

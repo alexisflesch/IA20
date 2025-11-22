@@ -91,7 +91,7 @@ Chaque donnée est un **point** dans un espace mathématique.
 
 Mesurer la ressemblance entre deux objets revient à mesurer la distance entre deux points.
 
-<iframe class="embedded-notebook" src="/observables/distances/index.html" width="100%" height="450px" style="border:none;"></iframe>
+<iframe class="embedded-notebook" src="/observables/distances/index.html" width="100%" height="600px" style="border:none;"></iframe>
 
 <!-- SLIDE -->
 

@@ -17,7 +17,7 @@ Modèle mathématique (Perceptron) :
 2.  **Somme** ($z = \sum x_i w_i + b$).
 3.  **Activation** ($y = f(z)$).
 
-<iframe class="embedded-notebook" src="/observables/perceptron/index.html" width="100%" height="400px"></iframe>
+<iframe class="embedded-notebook" src="/observables/perceptron/index.html" width="100%" height="600px"></iframe>
 
 <!-- SLIDE -->
 
@@ -28,7 +28,7 @@ C'est ce qui introduit la **non-linéarité**. Sans elles, un réseau de neurone
 *   **Sigmoid** : $0 \to 1$ (Probabilité).
 *   **ReLU** : $max(0, x)$ (Standard actuel).
 
-<iframe class="embedded-notebook" src="/observables/activation-functions/index.html" width="100%" height="300px"></iframe>
+<iframe class="embedded-notebook" src="/observables/activation-functions/index.html" width="100%" height="500px"></iframe>
 
 ---
 

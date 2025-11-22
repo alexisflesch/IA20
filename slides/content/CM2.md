@@ -35,7 +35,7 @@ $$ (x, y) $$
 On cherche une droite qui passe au milieu des points.
 $$ y = ax + b $$
 
-<iframe class="embedded-notebook" src="/observables/linear-regression/index.html" width="100%" height="400px"></iframe>
+<iframe class="embedded-notebook" src="/observables/linear-regression/index.html" width="100%" height="600px"></iframe>
 
 <!-- SLIDE -->
 
@@ -73,7 +73,7 @@ Algorithme :
 
 ## Démo KNN
 
-<iframe class="embedded-notebook" src="/observables/knn/index.html" width="100%" height="500px"></iframe>
+<iframe class="embedded-notebook" src="/observables/knn/index.html" width="100%" height="600px"></iframe>
 
 <!-- SLIDE -->
 
@@ -91,7 +91,7 @@ Algorithme :
 On pose une série de questions binaires (Oui/Non).
 "Est-il rouge ?", "Est-il grand ?"...
 
-<iframe class="embedded-notebook" src="/observables/decision-tree/index.html" width="100%" height="400px"></iframe>
+<iframe class="embedded-notebook" src="/observables/decision-tree/index.html" width="100%" height="600px"></iframe>
 
 <!-- SLIDE -->
 
