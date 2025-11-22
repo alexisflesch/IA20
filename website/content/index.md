@@ -41,11 +41,6 @@ title: "IA20 - Intelligence Artificielle"
 </div>
 
 <style>
-/* Hide default elements if they leak through */
-.page-header, .popover-hint {
-  display: none !important;
-}
-
 .landing-container {
   max-width: 1200px;
   margin: 0 auto;
